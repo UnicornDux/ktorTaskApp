@@ -1,0 +1,6 @@
+ktor:
+  application:
+    modules:
+      - com.edu.com.edu.ktorapp.ApplicationKt.module
+  deployment:
+    port: 8080
