@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Add a new task</title>
+</head>
+<body>
+    <h1>Adding a new task</h1>
+    <form method="post" action="/tasks">
+        <div>
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name">
+        </div>
+        <div>
+            <label for="description">Description</label>
+            <input type="text" id="description" name="description">
+        </div>
+        <div>
+            <label for="priority">Priority</label>
+            <select id="priority" name="priority">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
+        </div>
+        <input type="submit">
+    </form>
+</body>
+</html>
