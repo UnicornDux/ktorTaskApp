@@ -41,5 +41,6 @@ dependencies {
     implementation("io.ktor:ktor-server-host-common:3.2.3")
     implementation("io.ktor:ktor-serialization-jackson:3.2.3")
     testImplementation("io.ktor:ktor-server-test-host")
+    testImplementation("com.jayway.jsonpath:json-path:2.9.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }
