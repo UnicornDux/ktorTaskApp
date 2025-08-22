@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Using Ktor Websockets</title>
+</head>
+<body>
+    <h1>View Task via Websocket</h1>
+    <form action="javascript:readAndDisplayAllTasks()">
+        <input type="submit" value = "view the Task">
+    </form>
+    <table rules="all">
+        <thead>
+        <tr>
+            <th>Name</th><th>Description</th><th>Priority</th>
+        </tr>
+        </thead>
+        <tbody id="taskTableBody">
+        </tbody>
+    </table>
+    <script>
+       function readAndDisplayAllTasks(){
+           clearTable();
+           const severURL= `ws://127.0.0.1:8080/ws`;
+           const socket = new WebSocket(severURL);
+           socket.onopen = logOpenToConsole;
+           socket.onclose = logCloseToConsole;
+           socket.onmessage = readAndDisplayTask;
+       }
+
+       function readAndDisplayTask(event) {
+           let task = JSON.parse(event.data)
+           logTaskToConsole(task)
+           addTaskToTable(task)
+       }
+
+       function logOpenToConsole() {
+          console.log("Web socket connection opened")
+       }
+
+       function logCloseToConsole() {
+           console.log("Web socket connection closed")
+       }
+
+       function logTaskToConsole(task) {
+           console.log(`Received ${task.name}`)
+       }
+
+       function tableBody() {
+           return document.getElementById("taskTableBody")
+       }
+
+       function addTaskToTable(task) {
+           tableBody().appendChild(taskRow(task))
+       }
+
+       function clearTable() {
+           tableBody().innerHTML = ""
+       }
+
+       function taskRow(task) {
+           return tr([
+               td(task.name),
+               td(task.description),
+               td(task.priority)
+           ]);
+       }
+
+       function tr(children) {
+           const node = document.createElement("tr")
+           children.forEach(child => node.append(child))
+           return node
+       }
+
+       function td(text) {
+           const node = document.createElement("td")
+           node.appendChild(document.createTextNode(text))
+           return node
+       }
+    </script>
+</body>
+</html>

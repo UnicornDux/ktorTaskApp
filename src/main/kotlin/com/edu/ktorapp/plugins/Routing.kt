@@ -73,8 +73,13 @@ fun Application.configureRouting() {
                     call.respond(HttpStatusCode.BadRequest)
                 }
             }
-            get("/byName/{taskName}") {
-                val name = call.parameters["taskName"]
+            get("/byName/{name?}") {
+
+                // > /byName?name=xxxxx&priority=xxxx
+                // val name = call.request.queryParameters["name"]
+                // val priorityAsText = call.request.queryParameters["priority"]
+
+                val name = call.parameters["name"]
                 if (name == null) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@get
