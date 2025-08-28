@@ -1,5 +1,6 @@
 package com.edu.com.edu.ktorapp
 
+import com.edu.com.edu.ktorapp.model.PostgresTaskRepository
 import com.edu.com.edu.ktorapp.plugins.configureDatabases
 import com.edu.com.edu.ktorapp.plugins.configureFrameworks
 import com.edu.com.edu.ktorapp.plugins.configureHTTP
@@ -15,11 +16,13 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    val repository = PostgresTaskRepository()
+
     configureHTTP()
-    configureSerialization()
+    configureSerialization(repository)
     configureDatabases()
-    configureTemplating()
+    configureTemplating(repository)
     configureFrameworks()
-    configureSockets()
-    configureRouting()
+    configureSockets(repository)
+    configureRouting(repository)
 }

@@ -6,7 +6,6 @@ import com.edu.com.edu.ktorapp.model.TaskRepository
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.*
 import io.ktor.server.http.content.staticResources
-import io.ktor.server.request.receive
 import io.ktor.server.request.receiveParameters
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -14,7 +13,7 @@ import io.ktor.server.thymeleaf.Thymeleaf
 import io.ktor.server.thymeleaf.ThymeleafContent
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 
-fun Application.configureTemplating() {
+fun Application.configureTemplating(repository: TaskRepository) {
     install(Thymeleaf) {
         setTemplateResolver(ClassLoaderTemplateResolver().apply {
             prefix = "templates/thymeleaf/"
@@ -26,7 +25,7 @@ fun Application.configureTemplating() {
         staticResources("/static", "static")
         route("/todos") {
             get {
-                val tasks = TaskRepository.allTasks()
+                val tasks = repository.allTasks()
                 call.respond(ThymeleafContent("all-todos", mapOf("tasks" to tasks)))
             }
             get("byName") {
@@ -35,7 +34,7 @@ fun Application.configureTemplating() {
                     call.respond(HttpStatusCode.BadRequest)
                     return@get
                 }
-                val task = TaskRepository.taskByName(name)
+                val task = repository.taskByName(name)
                 if (task == null){
                     call.respond(HttpStatusCode.NotFound)
                     return@get
@@ -52,7 +51,7 @@ fun Application.configureTemplating() {
                 }
                 try {
                     val priority = Priority.valueOf(priorityText)
-                    val tasks = TaskRepository.tasksByPriority(priority)
+                    val tasks = repository.tasksByPriority(priority)
                     if (tasks.isEmpty()) {
                         call.respond(HttpStatusCode.NotFound)
                         return@get
@@ -82,14 +81,14 @@ fun Application.configureTemplating() {
                 }
                 try {
                     val priority = Priority.valueOf(params.third)
-                    TaskRepository.addTask(
+                    repository.addTask(
                         Task(
                             params.first,
                             params.second,
                             priority
                         )
                     )
-                    val tasks = TaskRepository.allTasks()
+                    val tasks = repository.allTasks()
                     call.respond(ThymeleafContent("all-todos", mapOf("tasks" to tasks)))
                 }catch (e: IllegalArgumentException) {
                     call.respond(HttpStatusCode.BadRequest)

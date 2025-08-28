@@ -1,5 +1,6 @@
 package com.edu.ktorapp.task
 
+import com.edu.ktorapp.task.FakeTaskRepository
 import com.edu.com.edu.ktorapp.model.Priority
 import com.edu.com.edu.ktorapp.model.Task
 import com.edu.com.edu.ktorapp.plugins.configureRouting
@@ -25,9 +26,10 @@ class WsTest {
     @Test
     fun testRoot() = testApplication {
         application {
-            configureRouting()
-            configureSerialization()
-            configureSockets()
+            val repository = FakeTaskRepository()
+            configureRouting(repository)
+            configureSerialization(repository)
+            configureSockets(repository)
         }
 
         val client = createClient {

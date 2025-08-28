@@ -12,7 +12,7 @@ import kotlinx.serialization.json.Json
 import java.util.Collections
 import kotlin.time.Duration.Companion.seconds
 
-fun Application.configureSockets() {
+fun Application.configureSockets(repository: TaskRepository) {
     install(WebSockets) {
         // the contentConverter properties is set, enabling the plugin to
         // serialize objects send and received through the `kotlin.serialization`
@@ -38,15 +38,15 @@ fun Application.configureSockets() {
                 }
             }
             */
-            sendAllTask()
+            sendAllTask(repository.allTasks())
             close(CloseReason(CloseReason.Codes.NORMAL, "All done"))
         }
         webSocket("/ws2") {
             sessions.add(this)
-            sendAllTask()
+            sendAllTask(repository.allTasks())
             while(true){
                 val newTask = receiveDeserialized<Task>()
-                TaskRepository.addTask(newTask)
+                repository.addTask(newTask)
                 for (session in sessions) {
                     session.sendSerialized(newTask)
                 }
@@ -55,8 +55,7 @@ fun Application.configureSockets() {
     }
 }
 
-private suspend fun DefaultWebSocketServerSession.sendAllTask() {
-    val tasks = TaskRepository.allTasks()
+private suspend fun DefaultWebSocketServerSession.sendAllTask(tasks: List<Task>) {
     for (task in tasks) {
         sendSerialized(task)
         delay(1000)

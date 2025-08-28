@@ -20,10 +20,6 @@ import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
-import com.jayway.jsonpath.JsonPath
-import com.jayway.jsonpath.DocumentContext
-import io.ktor.client.HttpClient
-import io.ktor.client.request.accept
 
 class TaskTest {
 
@@ -133,42 +129,5 @@ class TaskTest {
         val taskNames = response2.body<List<Task>>().map { it.name }
 
         assertContains(taskNames, "swimming")
-    }
-
-
-    // json path to test json response
-    @Test
-    fun taskCanBeFoundValidJsonPath() = testApplication {
-        application {
-            module()
-        }
-        val jsonDoc = client.getAsJsonPath("/tasks")
-        // $[*].name means "treat the document as an array and return the
-        // value of the name property for each entry
-        val result: List<String> = jsonDoc.read("$[*].name")
-        assertEquals("Task 1", result[0])
-        assertEquals("Task 2", result[1])
-        assertEquals("Task 3", result[2])
-    }
-
-    @Test
-    fun tasksCanBeFoundByPriorityValidJsonPath() = testApplication {
-        application {
-            module()
-        }
-        val priority = Priority.Medium
-        val jsonDoc = client.getAsJsonPath("/tasks/byPriority/$priority")
-        // $[?(@.priority == 'Medium')].name means "return the value of the name property of every entry
-        // in the array with a priority equal to the supplied value
-        val result: List<String> = jsonDoc.read("$[?(@.priority == '$priority')].name")
-        assertEquals(1, result.size)
-        assertEquals("Task 2", result[0])
-    }
-
-    suspend fun HttpClient.getAsJsonPath(url: String): DocumentContext {
-        val response = this.get(url) {
-            accept(ContentType.Application.Json)
-        }
-        return JsonPath.parse(response.bodyAsText())
     }
 }

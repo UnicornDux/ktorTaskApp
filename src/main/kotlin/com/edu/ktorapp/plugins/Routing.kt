@@ -3,18 +3,16 @@ package com.edu.com.edu.ktorapp.plugins
 import com.edu.com.edu.ktorapp.model.Priority
 import com.edu.com.edu.ktorapp.model.Task
 import com.edu.com.edu.ktorapp.model.TaskRepository
-import com.edu.com.edu.ktorapp.model.tasksAsTable
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.staticResources
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.receive
-import io.ktor.server.request.receiveParameters
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.SerializationException
 
-fun Application.configureRouting() {
+fun Application.configureRouting(repository: TaskRepository) {
     routing {
         install(StatusPages) {
             // what Action to take when an exception of type IllegalStateException is thrown
@@ -49,7 +47,7 @@ fun Application.configureRouting() {
         // merge same routes
         route("/tasks") {
             get {
-                val tasks = TaskRepository.allTasks()
+                val tasks = repository.allTasks()
                 call.respond(tasks)
             }
 
@@ -63,7 +61,7 @@ fun Application.configureRouting() {
 
                 try {
                     val priority = Priority.valueOf(priorityAsText)
-                    val tasks = TaskRepository.tasksByPriority(priority)
+                    val tasks = repository.tasksByPriority(priority)
                     if (tasks.isEmpty()) {
                         call.respond(HttpStatusCode.NotFound)
                         return@get
@@ -84,7 +82,7 @@ fun Application.configureRouting() {
                     call.respond(HttpStatusCode.BadRequest)
                     return@get
                 }
-                val task = TaskRepository.taskByName(name)
+                val task = repository.taskByName(name)
                 if (task == null) {
                     call.respond(HttpStatusCode.NotFound)
                     return@get
@@ -107,7 +105,7 @@ fun Application.configureRouting() {
                 }
                 try {
                     val priority = Priority.valueOf(params.third)
-                    TaskRepository.addTask(
+                    repository.addTask(
                         Task(
                             params.first,
                             params.second,
@@ -125,7 +123,7 @@ fun Application.configureRouting() {
             post {
                 try {
                     val task = call.receive<Task>()
-                    TaskRepository.addTask(task)
+                    repository.addTask(task)
                     call.respond(HttpStatusCode.Created)
                 }catch(ex: IllegalStateException){
                     call.respond(HttpStatusCode.BadRequest)
@@ -139,7 +137,7 @@ fun Application.configureRouting() {
                     call.respond(HttpStatusCode.BadRequest)
                     return@delete
                 }
-                if (TaskRepository.removeTask(name)) {
+                if (repository.removeTask(name)) {
                      call.respond(HttpStatusCode.NoContent)
                 }else {
                      call.respond(HttpStatusCode.NotFound)
