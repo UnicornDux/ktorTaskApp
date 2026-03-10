@@ -1,4 +1,5 @@
 ktor:
+  development: true
   application:
     modules:
       - com.edu.com.edu.ktorapp.ApplicationKt.module

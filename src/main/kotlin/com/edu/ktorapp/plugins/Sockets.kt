@@ -6,11 +6,14 @@ import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
+import io.ktor.util.logging.KtorSimpleLogger
 import io.ktor.websocket.*
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 import java.util.Collections
 import kotlin.time.Duration.Companion.seconds
+
+internal val Logger = KtorSimpleLogger("com.edu.ktorapp.plugins.Sockets")
 
 fun Application.configureSockets(repository: TaskRepository) {
     install(WebSockets) {
@@ -27,6 +30,7 @@ fun Application.configureSockets(repository: TaskRepository) {
         val sessions = Collections.synchronizedList<WebSocketServerSession>(ArrayList())
 
         webSocket("/ws") { // websocketSession
+            Logger.info("Client connected")
             /*
             for (frame in incoming) {
                 if (frame is Frame.Text) {

@@ -51,7 +51,7 @@ fun Application.configureRouting(repository: TaskRepository) {
                 call.respond(tasks)
             }
 
-            get("/byPriority/{priority?}") {
+            get("/byPriority/{priority}") {
                 // path parameters
                 val priorityAsText = call.parameters["priority"]
                 if (priorityAsText == null) {
@@ -71,7 +71,7 @@ fun Application.configureRouting(repository: TaskRepository) {
                     call.respond(HttpStatusCode.BadRequest)
                 }
             }
-            get("/byName/{name?}") {
+            get("/byName/{name}") {
 
                 // > /byName?name=xxxxx&priority=xxxx
                 // val name = call.request.queryParameters["name"]
